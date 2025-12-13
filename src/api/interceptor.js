@@ -1,12 +1,23 @@
 import axios from "axios";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || "https://practo-cms-backend-8.onrender.com";
+
 const axiosInstance = axios.create({
-  baseURL: "api-base-url",
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // ========== REQUEST INTERCEPTOR ==========
 axiosInstance.interceptors.request.use(
   (config) => {
+    // Attach Bearer token if available
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     console.log("Request:", config.method?.toUpperCase(), config.url);
     return config;
   },
@@ -20,26 +31,29 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log("Error:", error.response?.status, error.response?.config?.url);
+    console.error("Error:", error.response?.status, error.response?.config?.url);
+    
+    if (error.response?.status === 401) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("permissions");
+      window.location.href = "/login";
+    }
+    
     return Promise.reject(error);
   }
 );
 
-
 const api = {
   get: (url, config = {}) => axiosInstance.get(url, config),
 
-  post: (url, data, config = {}) =>
-    axiosInstance.post(url, data, config),
+  post: (url, data, config = {}) => axiosInstance.post(url, data, config),
 
-  put: (url, data, config = {}) =>
-    axiosInstance.put(url, data, config),
+  put: (url, data, config = {}) => axiosInstance.put(url, data, config),
 
-  patch: (url, data, config = {}) =>
-    axiosInstance.patch(url, data, config),
+  patch: (url, data, config = {}) => axiosInstance.patch(url, data, config),
 
-  delete: (url, config = {}) =>
-    axiosInstance.delete(url, config),
+  delete: (url, config = {}) => axiosInstance.delete(url, config),
 };
 
 export default api;
