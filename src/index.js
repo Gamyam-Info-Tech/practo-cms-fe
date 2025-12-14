@@ -19,7 +19,7 @@ if (rootElement) {
           <App />
           <ToastContainer
             position="top-right"
-            autoClose={2000}
+            autoClose={3000}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick
@@ -37,7 +37,7 @@ if (rootElement) {
   console.error("Root element not found!");
 }
 
-if (process.env.NODE_ENV === "production") {
+if (window) {
   window.console.log = () => {};
   window.console.error = () => {};
   window.console.warn = () => {};

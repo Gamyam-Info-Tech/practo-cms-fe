@@ -3,21 +3,17 @@ import { useDispatch } from "react-redux";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import AppRouter from "./routes/AppRoutes";
 
-import { GOOGLE_CLIENT_ID } from "./components/utils/helper";
+import { clearAuthData, getToken, GOOGLE_CLIENT_ID } from "./utils/helper";
 import { getCurrentUser } from "./redux/action/authAction/AuthAction";
-
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
+    const token = getToken();
     if (token) {
       dispatch(getCurrentUser()).catch((error) => {
-        console.error("Session restore failed:", error);
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("permissions");
+        clearAuthData();
       });
     }
   }, [dispatch]);

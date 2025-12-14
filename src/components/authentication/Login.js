@@ -4,10 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { ROUTES } from "../../routes/RouterConstant";
-import {
-  loginUser,
-  loginWithGoogle,
-} from "../../redux/action/authAction/AuthAction";
+import { loginUser, loginWithGoogle } from "../../redux/action/authAction/AuthAction";
 import { FaRegEye } from "react-icons/fa";
 import { IoEyeOffOutline } from "react-icons/io5";
 
@@ -27,11 +24,7 @@ const Login = ({ setScreen }) => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
 
     if (validationErrors[name]) {
       const newErrors = { ...validationErrors };
@@ -51,8 +44,6 @@ const Login = ({ setScreen }) => {
 
     if (!formData.password) {
       errors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      errors.password = "Password must be at least 8 characters";
     }
 
     return errors;
@@ -81,20 +72,16 @@ const Login = ({ setScreen }) => {
 
       toast.success(`Welcome back, ${response.user.name}!`, {
         toastId: "login-success",
-        autoClose: 3000,
       });
 
       navigate(ROUTES.DASHBOARD);
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || error.message || "Login failed";
+      const errorMessage = error.response?.data?.message || error.message || "Login failed";
 
       toast.error(errorMessage, {
         toastId: "login-error",
-        autoClose: 5000,
         closeOnClick: true,
         pauseOnHover: true,
-        draggable: true,
       });
     }
   };
@@ -105,31 +92,22 @@ const Login = ({ setScreen }) => {
         loginWithGoogle(credentialResponse.credential)
       );
 
-      toast.success(`Welcome back, ${response.user.name}!`, {
-        toastId: "google-success",
-        autoClose: 3000,
-      });
+      toast.success(`Welcome back, ${response.user.name}!`, {toastId: "google-success" });
 
       navigate(ROUTES.DASHBOARD);
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || error.message || "Google login failed";
+      const errorMessage = error.response?.data?.message || error.message || "Google login failed";
 
       toast.error(errorMessage, {
         toastId: "google-error",
-        autoClose: 5000,
         closeOnClick: true,
         pauseOnHover: true,
-        draggable: true,
       });
     }
   };
 
   const handleGoogleError = () => {
-    toast.error("Google login failed. Please try again.", {
-      toastId: "google-error-btn",
-      autoClose: 5000,
-    });
+    toast.error("Google login failed. Please try again.", {toastId: "google-error-btn",});
   };
 
   return (
@@ -234,28 +212,7 @@ const Login = ({ setScreen }) => {
         </button>
       </form>
 
-      {/* <div className="py-4">
-        <div className="flex items-center my-4">
-          <div className="flex-grow h-px bg-gray-300" />
-          <span className="px-3 text-xs text-gray-500 font-medium">OR</span>
-          <div className="flex-grow h-px bg-gray-300" />
-        </div>
-
-        <div className="flex justify-center">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            useOneTap={false}
-            theme="outline"
-            size="large"
-            text="continue_with"
-            shape="rectangular"
-            width="100%"
-          />
-        </div>
-      </div> */}
       <div className="py-4">
-        {/* OR Divider */}
         <div className="flex items-center my-4">
           <div className="flex-1 h-px bg-gray-300" />
           <span className="px-3 text-xs text-gray-500 font-medium">OR</span>

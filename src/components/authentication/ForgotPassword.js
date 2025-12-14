@@ -21,7 +21,6 @@ const ForgotPassword = ({ setScreen }) => {
     <div className="w-full max-w-md mx-auto p-4 md:p-6">
       <button
         onClick={handleBackLogin}
-        // className="flex items-center gap-1 text-teal-600 hover:text-teal-700 mb-4 transition group"
         className="flex mb-6 items-center gap-1 text-sm md:text-sm text-[#2fa8c8] hover:opacity-90 transition group drop-shadow-lg"
       >
         <MdArrowBackIos className="w-4 h-4" />
@@ -29,7 +28,7 @@ const ForgotPassword = ({ setScreen }) => {
       </button>
 
       <div className="mb-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-1">Reset Password</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-1">Forgot Password</h2>
         <p className="text-gray-600 text-sm md:text-base">Enter your email and we'll send you instructions to reset your password</p>
       </div>
 

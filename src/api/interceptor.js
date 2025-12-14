@@ -1,7 +1,7 @@
 import axios from "axios";
+import { getToken } from "../utils/helper";
 
-const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "https://practo-cms-backend-8.onrender.com";
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -10,33 +10,28 @@ const axiosInstance = axios.create({
   },
 });
 
-// ========== REQUEST INTERCEPTOR ==========
+// ........................ REQUEST INTERCEPTOR ........................
+
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Attach Bearer token if available
-    const token = localStorage.getItem("access_token");
+    const token = getToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     console.log("Request:", config.method?.toUpperCase(), config.url);
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ========== RESPONSE INTERCEPTOR ==========
+//........................ RESPONSE INTERCEPTOR ........................
+
 axiosInstance.interceptors.response.use(
   (response) => {
     console.log("Response:", response.status, response.config.url);
     return response;
   },
   (error) => {
-    console.error(
-      "Error:",
-      error.response?.status,
-      error.response?.config?.url
-    );
 
     if (error.response?.status === 401) {
       const requestUrl = error.config?.url || "";
@@ -55,7 +50,6 @@ axiosInstance.interceptors.response.use(
         }
       }
     }
-
     return Promise.reject(error);
   }
 );

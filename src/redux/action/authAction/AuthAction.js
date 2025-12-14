@@ -1,4 +1,11 @@
+import {
+  AUTH_LOGIN,
+  GET_CURRENT_USER_DETAILED_ACCESS,
+  LOGIN_WITH_GOOGLE,
+  REFRESH_TOKEN,
+} from "../../../api/apiEndPoints";
 import api from "../../../api/interceptor";
+import { clearAuthData, storeAuthData } from "../../../utils/helper";
 import {
   fetchLoginUserFailure,
   fetchLoginUserStart,
@@ -6,34 +13,27 @@ import {
   fetchLoginSocialStart,
   fetchLoginSocialSuccess,
   fetchLoginSocialFailure,
-  fetchLogoutStart,
-  fetchLogoutSuccess,
-  fetchLogoutFailure,
 } from "../../reducer/authReducer/AuthReducer";
 
 let isPostLoginUser = false;
 let isPostSocialLogin = false;
+let isgetCurrentUser = false;
 
-// Email/Password Login
+
+// .................... Email/Password Login ...........................
+
 export const loginUser = (email, password) => async (dispatch) => {
   if (isPostLoginUser) return;
   isPostLoginUser = true;
   dispatch(fetchLoginUserStart());
 
   try {
-    const response = await api.post("/api/auth/login", {
-      email,
-      password,
-    });
+    const response = await api.post(`${AUTH_LOGIN}`, { email, password });
 
     const { token, user, permissions } = response.data;
-
-    // Store token, user, and permissions in localStorage
-    localStorage.setItem("access_token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("permissions", JSON.stringify(permissions));
-
+    storeAuthData({ token, user, permissions });
     dispatch(fetchLoginUserSuccess({ user, permissions }));
+
     return response.data;
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || "Login failed";
@@ -44,25 +44,21 @@ export const loginUser = (email, password) => async (dispatch) => {
   }
 };
 
-// Google OAuth Login
+
+// .................... Google OAuth Login .......................
+
 export const loginWithGoogle = (googleToken) => async (dispatch) => {
   if (isPostSocialLogin) return;
   isPostSocialLogin = true;
   dispatch(fetchLoginSocialStart());
 
   try {
-    const response = await api.post("/api/auth/oauth/google", {
-      token: googleToken,
-    });
+    const response = await api.post(`${LOGIN_WITH_GOOGLE}`, { token: googleToken });
 
     const { token, user, permissions } = response.data;
-
-    // Store token, user, and permissions in localStorage
-    localStorage.setItem("access_token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("permissions", JSON.stringify(permissions));
-
+    storeAuthData({ token, user, permissions });
     dispatch(fetchLoginSocialSuccess({ user, permissions }));
+
     return response.data;
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || "Google login failed";
@@ -73,64 +69,47 @@ export const loginWithGoogle = (googleToken) => async (dispatch) => {
   }
 };
 
-// Get Current User (Session Restore)
+
+// ................. Get Current User (Session Restore) ........................
+
 export const getCurrentUser = () => async (dispatch) => {
+  if (isgetCurrentUser) return;
+  isgetCurrentUser = true;
   dispatch(fetchLoginUserStart());
 
   try {
-    const response = await api.get("/api/auth/me");
+    const response = await api.get(`${GET_CURRENT_USER_DETAILED_ACCESS}`);
 
     const { user, permissions } = response.data;
-
-    // Update localStorage
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("permissions", JSON.stringify(permissions));
-
+    storeAuthData({ user, permissions });
     dispatch(fetchLoginUserSuccess({ user, permissions }));
+    
     return response.data;
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || "Session restore failed";
     dispatch(fetchLoginUserFailure(errorMessage));
-    
-    // Clear localStorage on failure
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("permissions");
-    
+    clearAuthData();
     throw error;
+  } finally {
+    isgetCurrentUser = false;
   }
 };
 
-// Refresh Token
+
+// ....................... Refresh Token ............................
+
 export const refreshToken = () => async (dispatch) => {
   try {
-    const response = await api.post("/api/auth/refresh");
+    const response = await api.post(`${REFRESH_TOKEN}`);
 
     const { token } = response.data;
-    localStorage.setItem("access_token", token);
+    storeAuthData({ token });
 
     return response.data;
   } catch (error) {
-    const errorMessage = error.response?.data?.message || error.message || "Token refresh failed";
+    const errorMessage =
+      error.response?.data?.message || error.message || "Token refresh failed";
     console.error("Token refresh failed:", errorMessage);
-    throw error;
-  }
-};
-
-// Logout
-export const logoutUser = () => async (dispatch) => {
-  dispatch(fetchLogoutStart());
-
-  try {
-    // Clear localStorage
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("permissions");
-
-    dispatch(fetchLogoutSuccess());
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || error.message || "Logout failed";
-    dispatch(fetchLogoutFailure(errorMessage));
     throw error;
   }
 };

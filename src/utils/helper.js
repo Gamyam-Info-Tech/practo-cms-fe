@@ -1,16 +1,12 @@
 import { IoDocumentTextOutline, IoHome } from "react-icons/io5";
-import { ROUTES } from "../../routes/RouterConstant";
+import { ROUTES } from "../routes/RouterConstant";
 import { FiUpload } from "react-icons/fi";
 import { FaRegChartBar } from "react-icons/fa";
 import { PiUsers } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
 
-
-// export const isAuthenticated = () => {
-//   const token = localStorage.getItem("access_token");
-//   return token && token.trim() !== "";
-// };
-
+// Google OAuth Client ID
+export const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 export const MENU_ITEMS = [
   { label: "Dashboard", icon: <IoHome size={20} />, path: ROUTES.DASHBOARD },
@@ -30,20 +26,16 @@ export const MENU_ITEMS = [
 ];
 
 
-
-/**
- * Authentication Helper Functions
- */
-
-// Google OAuth Client ID
-export const GOOGLE_CLIENT_ID = 
-  process.env.REACT_APP_GOOGLE_CLIENT_ID || 
-  "581506113726-5i1dpgj13fq69d08agpjdbrpctc96o56.apps.googleusercontent.com";
+// Get token from localStorage
+export const getToken = () => {
+  return localStorage.getItem("access_token");
+};
 
 // Check if user is authenticated
 export const isAuthenticated = () => {
-  const token = localStorage.getItem("access_token");
+  const token = getToken()
   return !!token;
+  // return token && token.trim() !== "";
 };
 
 // Get current user from localStorage
@@ -111,32 +103,12 @@ export const clearAuthData = () => {
   localStorage.removeItem("permissions");
 };
 
-// Get token from localStorage
-export const getToken = () => {
-  return localStorage.getItem("access_token");
-};
-
 // Store auth data in localStorage
-export const storeAuthData = (token, user, permissions) => {
-  localStorage.setItem("access_token", token);
-  localStorage.setItem("user", JSON.stringify(user));
-  localStorage.setItem("permissions", JSON.stringify(permissions));
-};
-
-// Check if token is expired (basic check - you can enhance this)
-export const isTokenExpired = () => {
-  const token = getToken();
-  if (!token) return true;
-
-  try {
-    // Decode JWT token (basic decode without verification)
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    const exp = payload.exp * 1000; // Convert to milliseconds
-    return Date.now() >= exp;
-  } catch (error) {
-    console.error("Error decoding token:", error);
-    return true;
-  }
+export const storeAuthData = ({ token, user, permissions }) => {
+  if (token) localStorage.setItem("access_token", token);
+  if (user) localStorage.setItem("user", JSON.stringify(user));
+  if (permissions)
+    localStorage.setItem("permissions", JSON.stringify(permissions));
 };
 
 // Format user's full name
@@ -150,9 +122,9 @@ export const getUserFullName = () => {
 export const getUserInitials = () => {
   const user = getCurrentUserFromStorage();
   if (!user) return "";
-  
+
   const firstName = user.firstName || "";
   const lastName = user.lastName || "";
-  
+
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
 };
