@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const MedicalTopics = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const { topics, isTopicsListLoading, error } = useSelector(
     (state) => state.topics
