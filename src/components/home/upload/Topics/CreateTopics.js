@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchDoctorsList,
@@ -16,27 +16,44 @@ const CreateTopics = () => {
   const navigate = useNavigate();
   const { id: topicId } = useParams();
 
-  const { user } = useSelector((state) => state.auth);
-  const { doctors, topics, isCreateLoading } = useSelector(
-    (state) => state.topics
-  );
-  console.log("topics", topics);
-
-  const selectedTopic = topics?.find((topic) => topic?.id === topicId);
-
-  // const doctorFirstName = selectedTopic?.assignedDoctor?.firstName;
-  // const doctorLastName = selectedTopic?.assignedDoctor?.lastName;
-  const selectedDoctorId = selectedTopic?.assignedDoctor?.id;
-
-  const isDoctorCreator = user?.role === ROLE_VARIABLES_MAP?.DOCTOR_CREATOR;
-  const isMedicalReviewerCreator =
-    user?.role === ROLE_VARIABLES_MAP?.MEDICAL_REVIEWER;
-
   const [formData, setFormData] = useState({
     title: "",
     doctorId: "",
     description: "",
   });
+
+  const { user } = useSelector((state) => state.auth);
+  const { doctors, topics, isCreateLoading } = useSelector((state) => state.topics);
+
+  const isDoctorCreator = user?.role === ROLE_VARIABLES_MAP?.DOCTOR_CREATOR;
+  const isMedicalReviewerCreator = user?.role === ROLE_VARIABLES_MAP?.MEDICAL_REVIEWER;
+
+  const selectedTopic = useMemo(() => {
+    return topics?.find((topic) => topic.id === topicId);
+  }, [topics, topicId]);
+
+  useEffect(() => {
+    dispatch(fetchUplodedTopcsList());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isMedicalReviewerCreator) {
+      dispatch(fetchDoctorsList());
+    }
+  }, [dispatch, isMedicalReviewerCreator]);
+
+  // const doctorFirstName = selectedTopic?.assignedDoctor?.firstName;
+  // const doctorLastName = selectedTopic?.assignedDoctor?.lastName;
+  const selectedDoctorId = selectedTopic?.assignedDoctor?.id;
+
+  useEffect(() => {
+    if (isDoctorCreator && selectedTopic) {
+      setFormData((prev) => ({
+        ...prev,
+        title: selectedTopic.title || "",
+      }));
+    }
+  }, [isDoctorCreator, selectedTopic]);
 
   useEffect(() => {
     if (isMedicalReviewerCreator && selectedDoctorId) {
@@ -46,16 +63,6 @@ const CreateTopics = () => {
       }));
     }
   }, [isMedicalReviewerCreator, selectedDoctorId]);
-
-  useEffect(() => {
-    dispatch(fetchUplodedTopcsList());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (user?.role === ROLE_VARIABLES_MAP?.MEDICAL_REVIEWER) {
-      dispatch(fetchDoctorsList());
-    }
-  }, [dispatch, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,7 +103,9 @@ const CreateTopics = () => {
 
       if (response?.success) {
         toast.success("Created Successfully" || response.message);
-        const routingTopic = isDoctorCreator ? ROUTES.MY_TOPICS : ROUTES.MEDICAL_TOPICS
+        const routingTopic = isDoctorCreator
+          ? ROUTES.MY_TOPICS
+          : ROUTES.MEDICAL_TOPICS;
         resetForm();
         navigate(routingTopic);
       }
@@ -116,7 +125,9 @@ const CreateTopics = () => {
             {isDoctorCreator ? "Add Doctor Notes" : "Create Topic"}
           </h1>
           <p className="text-gray-500 mt-1">
-            Add new Topic content to the blog
+            {isDoctorCreator
+              ? "Review topic details and add your medical notes"
+              : "Add new topic content"}
           </p>
         </div>
 
@@ -130,21 +141,27 @@ const CreateTopics = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              {!isDoctorCreator && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Title *
-                    </label>
-                    <input
-                      name="title"
-                      value={formData.title}
-                      onChange={handleChange}
-                      placeholder="Enter content title"
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+              {/* {!isDoctorCreator && ( */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Title *
+                  </label>
+                  <input
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    disabled={isDoctorCreator}
+                    placeholder="Enter content title"
+                    required
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                      isDoctorCreator
+                        ? "bg-gray-100 cursor-not-allowed text-gray-700"
+                        : ""
+                    }`}
+                  />
+                </div>
+                {!isDoctorCreator && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Doctor Name *
@@ -157,27 +174,40 @@ const CreateTopics = () => {
                         className="w-full px-4 py-2 border rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed"
                       />
                     ) : ( */}
-                      <select
-                        name="doctorId"
-                        value={formData.doctorId}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="">Select Doctor</option>
-                        {doctors?.map((doctor) => (
-                          <option key={doctor.id} value={doctor.id}>
-                            {doctor.firstName} {doctor?.lastName}
-                          </option>
-                        ))}
-                      </select>
+                    <select
+                      name="doctorId"
+                      value={formData.doctorId}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Doctor</option>
+                      {doctors?.map((doctor) => (
+                        <option key={doctor.id} value={doctor.id}>
+                          {doctor.firstName} {doctor?.lastName}
+                        </option>
+                      ))}
+                    </select>
                     {/* )} */}
+                  </div>
+                )}
+              </div>
+
+              {isDoctorCreator && selectedTopic?.description && (
+                <div className="py-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Topic Description
+                  </label>
+
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700 leading-relaxed">
+                    {selectedTopic.description}
                   </div>
                 </div>
               )}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description *
+                  {isDoctorCreator ? "Doctor Notes *" : "Description *"}
                 </label>
                 <textarea
                   name="description"
@@ -198,14 +228,7 @@ const CreateTopics = () => {
             <div className="flex justify-end gap-4 pt-4">
               <button
                 type="button"
-                onClick={() => {
-                  setFormData({
-                    title: "",
-                    doctorId: "",
-                    description: "",
-                  });
-                  navigate(ROUTES.MY_TOPICS);
-                }}
+                onClick={() => navigate(ROUTES.MY_TOPICS)}
                 className="px-5 py-2 rounded-lg border text-gray-600 hover:bg-gray-100"
               >
                 Cancel

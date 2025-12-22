@@ -30,27 +30,32 @@ const DetailedCard = ({
     >
       {status && (
         <span
-          className={`absolute top-4 right-4 inline-flex px-3 py-[2px]
-            rounded-full text-xs font-medium ${statusClasses}`}
+          className={`absolute top-3 right-3 sm:top-4 sm:right-4
+            inline-flex px-3 py-[2px] rounded-full text-xs font-medium whitespace-nowrap
+            ${statusClasses}`}
         >
           {status.replace("_", " ")}
         </span>
       )}
+
       {title && (
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 pr-20 line-clamp-1">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 pr-24 sm:pr-28 leading-snug break-words line-clamp-2">
           {title}
         </h3>
       )}
+
       {description && (
         <Tooltip content={description} position="bottom" maxWidth="max-w-sm">
-          <p className="text-sm text-gray-500 line-clamp-2 cursor-help">
+          <p className="mt-1 text-sm text-gray-500 line-clamp-2 break-words cursor-help">
             {description}
           </p>
         </Tooltip>
       )}
+
       <div className="w-full h-px bg-gray-200 my-4" />
+
       {(createdBy || createdAt) && (
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-gray-500 mb-3 flex flex-wrap gap-x-1 gap-y-1">
           {createdBy && (
             <>
               Created by{" "}
@@ -72,22 +77,23 @@ const DetailedCard = ({
           )}
         </p>
       )}
+
       {counts && (
         <div className="flex flex-wrap gap-2 sm:gap-3">
           {counts?.scripts != null && (
-            <span className="px-3 py-1 rounded-lg bg-gray-100 text-xs text-gray-700">
+            <span className="px-3 py-1 rounded-lg bg-gray-100 text-xs text-gray-700 whitespace-nowrap">
               📄 Scripts <span className="font-semibold">{counts.scripts}</span>
             </span>
           )}
 
           {counts?.videos != null && (
-            <span className="px-3 py-1 rounded-lg bg-gray-100 text-xs text-gray-700">
+            <span className="px-3 py-1 rounded-lg bg-gray-100 text-xs text-gray-700 whitespace-nowrap">
               🎥 Videos <span className="font-semibold">{counts.videos}</span>
             </span>
           )}
 
           {counts?.doctorPointers != null && (
-            <span className="px-3 py-1 rounded-lg bg-gray-100 text-xs text-gray-700">
+            <span className="px-3 py-1 rounded-lg bg-gray-100 text-xs text-gray-700 whitespace-nowrap">
               👨‍⚕️ Doctors{" "}
               <span className="font-semibold">{counts.doctorPointers}</span>
             </span>

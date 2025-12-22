@@ -11,12 +11,7 @@ const MyTopics = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {
-    doctorAssignments = [],
-    isDoctorAssignmentLoading,
-    error,
-  } = useSelector((state) => state.topics);
-  console.log("doctorAssignments", doctorAssignments);
+  const { doctorAssignments = [], isDoctorAssignmentLoading, error } = useSelector((state) => state.topics);
   const user = useSelector((state) => state.auth.user);
   const redirecttoUploadById = user?.role === ROLE_VARIABLES_MAP?.DOCTOR_CREATOR;
 

@@ -32,7 +32,7 @@ const MyDoctorNotes = ({ topicId }) => {
 
   if (isDoctorPointerListLoading) {
     return (
-      <div className="p-10">
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
         <SkeletonBlock />
       </div>
     );
@@ -40,7 +40,7 @@ const MyDoctorNotes = ({ topicId }) => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl text-sm shadow-sm">
           {error}
         </div>
@@ -49,19 +49,19 @@ const MyDoctorNotes = ({ topicId }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 px-4 sm:px-6 lg:px-10 py-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
               My Doctor Notes
             </h1>
-            <p className="text-gray-500 mt-1 text-sm">
+            <p className="text-gray-500 mt-1 text-sm max-w-xl">
               Clinical notes and medical guidance provided by consultants
             </p>
           </div>
 
-          <div className="relative w-full md:w-80">
+          <div className="relative w-full sm:w-80">
             <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
             <input
               type="text"
@@ -73,7 +73,7 @@ const MyDoctorNotes = ({ topicId }) => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b bg-gray-50">
             <h2 className="text-lg font-semibold text-gray-900">
               Medical Notes
@@ -87,20 +87,19 @@ const MyDoctorNotes = ({ topicId }) => {
               </p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               {doctorPointer.map((item) => (
                 <div
                   key={item?.id}
-                  className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition"
+                  className="border border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition overflow-hidden"
                 >
-                  <div className="px-6 py-4 border-b bg-gray-50 rounded-t-2xl">
-                    <h3 className="text-xl font-semibold text-gray-900">
+                  <div className="px-5 py-4 bg-gray-50 border-b">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
                       {item?.topic?.title || "Medical Topic"}
                     </h3>
                   </div>
 
-                  <div className="px-6 py-5 space-y-4">
-
+                  <div className="px-5 py-5 space-y-4">
                     {item?.topic?.description && (
                       <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
                         <p className="text-sm text-blue-900 leading-relaxed">
@@ -116,22 +115,15 @@ const MyDoctorNotes = ({ topicId }) => {
                         </h4>
 
                         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                          <ul className="list-disc list-inside space-y-2 text-sm text-gray-700 leading-relaxed">
-                            {/* {item.notes
-                              .split("•")
-                              .filter(Boolean)
-                              .map((point, index) => (
-                                <li key={index}>{point.trim()}</li>
-                              ))} */}
-                              {item?.notes}
-                          </ul>
+                          <p className="list-disc list-inside space-y-2 text-sm text-gray-700 leading-relaxed">
+                            {item.notes}
+                          </p>
                         </div>
                       </div>
                     )}
                   </div>
 
-                  {/* Footer */}
-                  <div className="px-6 py-3 border-t bg-gray-50 rounded-b-2xl flex justify-between items-center">
+                  <div className="px-5 py-3 bg-gray-50 border-t flex justify-between items-center">
                     <span className="text-xs text-gray-400">
                       Created on{" "}
                       {item?.createdAt &&
