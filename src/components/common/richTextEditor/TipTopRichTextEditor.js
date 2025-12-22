@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import {
   FaBold,
   FaItalic,
@@ -12,10 +12,13 @@ import {
   FaUndo,
   FaRedo,
 } from "react-icons/fa";
+import { FiType } from "react-icons/fi";
+import { LuHeading1 , LuHeading2, LuHeading3} from "react-icons/lu";
+import "../../common/richTextEditor/richTextEditor.css";
 
 const TipTopRichTextEditor = ({ editor }) => {
-      if (!editor) return null;
-   return (
+  if (!editor) return null;
+  return (
     <div className="flex flex-wrap items-center gap-1 p-2 border-b border-gray-300 bg-gray-50">
       <button
         type="button"
@@ -34,6 +37,49 @@ const TipTopRichTextEditor = ({ editor }) => {
         title="Redo"
       >
         <FaRedo size={18} />
+      </button>
+
+      <div className="w-px h-6 bg-gray-300 mx-1" />
+
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().setParagraph().run()}
+        className={`p-2 rounded hover:bg-gray-200 ${
+          editor.isActive("paragraph") ? "bg-gray-300" : ""
+        }`}
+        title="Paragraph"
+      >
+        <FiType size={18} />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        className={`p-2 rounded hover:bg-gray-200 ${
+          editor.isActive("heading", { level: 1 }) ? "bg-gray-300" : ""
+        }`}
+        title="Heading 1"
+      >
+        <LuHeading1 size={18} />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        className={`p-2 rounded hover:bg-gray-200 ${
+          editor.isActive("heading", { level: 2 }) ? "bg-gray-300" : ""
+        }`}
+        title="Heading 2"
+      >
+        <LuHeading2 size={18} />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        className={`p-2 rounded hover:bg-gray-200 ${
+          editor.isActive("heading", { level: 3 }) ? "bg-gray-300" : ""
+        }`}
+        title="Heading 3"
+      >
+        <LuHeading3 size={18} />
       </button>
 
       <div className="w-px h-6 bg-gray-300 mx-1" />
@@ -136,6 +182,7 @@ const TipTopRichTextEditor = ({ editor }) => {
       </button>
     </div>
   );
-}
 
-export default TipTopRichTextEditor
+};
+
+export default TipTopRichTextEditor;

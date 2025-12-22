@@ -17,6 +17,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import TipTopRichTextEditor from "../../../common/richTextEditor/TipTopRichTextEditor";
+import "../../../common/richTextEditor/richTextEditor.css"
 
 const CreateTopics = () => {
   const dispatch = useDispatch();
@@ -44,7 +45,11 @@ const CreateTopics = () => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+       StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+      }),
       Underline,
       TextAlign.configure({
         types: ["heading", "paragraph"],
@@ -262,7 +267,7 @@ const CreateTopics = () => {
                   <TipTopRichTextEditor editor={editor} />
                   <EditorContent
                     editor={editor}
-                    className="prose max-w-none p-4 min-h-[200px] focus:outline-none"
+                    className="tiptap-editor p-4 min-h-[200px] focus:outline-none"
                   />
                 </div>
               </div>

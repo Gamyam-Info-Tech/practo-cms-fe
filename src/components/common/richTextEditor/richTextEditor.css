@@ -1,0 +1,53 @@
+/* Base editor wrapper */
+.tiptap-editor .ProseMirror {
+  outline: none;
+}
+
+/* Headings */
+.tiptap-editor .ProseMirror h1 {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0.67em 0;
+  line-height: 1.2;
+}
+
+.tiptap-editor .ProseMirror h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 0.75em 0;
+  line-height: 1.3;
+}
+
+.tiptap-editor .ProseMirror h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 0.83em 0;
+  line-height: 1.4;
+}
+
+/* Paragraph */
+.tiptap-editor .ProseMirror p {
+  margin: 0.5em 0;
+}
+
+/* Placeholder */
+.tiptap-editor
+  .ProseMirror
+  p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Lists */
+.tiptap-editor .ProseMirror ul,
+.tiptap-editor .ProseMirror ol {
+  padding-left: 1.5rem;
+  margin: 0.5em 0;
+}
+
+.tiptap-editor .ProseMirror li {
+  margin: 0.25em 0;
+}
