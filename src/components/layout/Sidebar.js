@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { MENU_ITEMS, ROLE_VARIABLES_MAP } from "../../utils/helper";
+import { MENU_ITEMS, ROLE_DISPLAY_NAME, ROLE_VARIABLES_MAP } from "../../utils/helper";
 import { revertAll } from "../../redux/reducer/revertStateReducer/RevertStateReducer";
 import { persistor } from "../../redux/store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,22 +43,44 @@ const Sidebar = () => {
     return "A";
   };
 
+  // const getUserName = () => {
+  //   if (user?.name) return user.name;
+  //   if (user?.firstName && user?.lastName)
+  //     return `${user.firstName} ${user.lastName}`;
+  //   return "Admin User";
+  // };
+
   const getUserName = () => {
+    if (user?.role && ROLE_DISPLAY_NAME[user.role]) {
+      return ROLE_DISPLAY_NAME[user.role];
+    }
     if (user?.name) return user.name;
-    if (user?.firstName && user?.lastName)
+    if (user?.firstName && user?.lastName) {
       return `${user.firstName} ${user.lastName}`;
+    }
     return "Admin User";
   };
 
+  // const getUserRole = () => {
+  //   if (user?.role) {
+  //     return user.role
+  //       .split("_")
+  //       .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+  //       .join(" ");
+  //   }
+  //   return "Super Admin";
+  // };
+
   const getUserRole = () => {
-    if (user?.role) {
-      return user.role
-        .split("_")
-        .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
-        .join(" ");
-    }
-    return "Super Admin";
-  };
+  if (!user?.role) return "Super Admin";
+  if (ROLE_DISPLAY_NAME[user.role]) {
+    return ROLE_DISPLAY_NAME[user.role];
+  }
+  return user.role
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
 
   const handleLogout = async () => {
     try {
@@ -123,7 +145,8 @@ const Sidebar = () => {
                     : "opacity-0 -translate-x-3 w-0 overflow-hidden"
                 }`}
               >
-                {user?.role === ROLE_VARIABLES_MAP?.DOCTOR_CREATOR && item.label === "My Topics"
+                {user?.role === ROLE_VARIABLES_MAP?.DOCTOR_CREATOR &&
+                item.label === "My Topics"
                   ? "Doctor Notes"
                   : item.label}
                 {/* {item.label} */}

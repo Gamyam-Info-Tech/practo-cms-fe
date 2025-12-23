@@ -4,7 +4,8 @@ import { CiSearch } from "react-icons/ci";
 import SkeletonBlock from "../../common/skeletonBlock/SkeletonBlock";
 import Pagination from "../../common/pagination/Pagination";
 import { fetchDoctorPointers } from "../../../redux/action/doctorAction/DoctorAction";
-import "../../common/richTextEditor/viewRichTextEditor.css"
+import "../../common/richTextEditor/viewRichTextEditor.css";
+import useDebounce from "../../common/hooks/useDebounce";
 
 const MyDoctorNotes = ({ topicId }) => {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ const MyDoctorNotes = ({ topicId }) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
+  const debouncedSearch = useDebounce(search, 500);
   const {
     doctorPointer = [],
     isDoctorPointerListLoading,
@@ -20,24 +22,19 @@ const MyDoctorNotes = ({ topicId }) => {
   } = useSelector((state) => state.doctor_pointers);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      dispatch(fetchDoctorPointers({ page, limit: 10, search, topicId }));
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [dispatch, page, search, topicId]);
+    dispatch(
+      fetchDoctorPointers({
+        page,
+        limit: 10,
+        ...(debouncedSearch && { search: debouncedSearch }),
+        topicId,
+      })
+    );
+  }, [dispatch, page, debouncedSearch, topicId]);
 
   useEffect(() => {
     setPage(1);
   }, [search]);
-
-  if (isDoctorPointerListLoading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <SkeletonBlock />
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -81,13 +78,20 @@ const MyDoctorNotes = ({ topicId }) => {
             </h2>
           </div>
 
-          {doctorPointer.length === 0 ? (
+          {isDoctorPointerListLoading && (
+            <div className="min-h-[60vh] flex items-center justify-center">
+              <SkeletonBlock />
+            </div>
+          )}
+
+          {!isDoctorPointerListLoading && doctorPointer.length === 0 && (
             <div className="py-24 text-center">
               <p className="text-gray-500 text-sm">
                 No medical notes found for this topic.
               </p>
             </div>
-          ) : (
+          )}
+          {!isDoctorPointerListLoading && doctorPointer.length > 0 && (
             <div className="p-4 sm:p-6 space-y-6">
               {doctorPointer.map((item) => (
                 <div
@@ -108,7 +112,12 @@ const MyDoctorNotes = ({ topicId }) => {
                   <div className="px-5 py-5 space-y-4">
                     {item?.topic?.description && (
                       <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                        <p dangerouslySetInnerHTML={{__html: item.topic.description}} className="text-sm text-blue-900 leading-relaxed richtext-content" />
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: item.topic.description,
+                          }}
+                          className="text-sm text-blue-900 leading-relaxed richtext-content"
+                        />
                       </div>
                     )}
 
@@ -119,7 +128,10 @@ const MyDoctorNotes = ({ topicId }) => {
                         </h4>
 
                         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                          <p  dangerouslySetInnerHTML={{__html: item.notes}} className="list-disc list-inside space-y-2 text-sm text-gray-700 leading-relaxed richtext-content" />
+                          <p
+                            dangerouslySetInnerHTML={{ __html: item.notes }}
+                            className="list-disc list-inside space-y-2 text-sm text-gray-700 leading-relaxed richtext-content"
+                          />
                         </div>
                       </div>
                     )}

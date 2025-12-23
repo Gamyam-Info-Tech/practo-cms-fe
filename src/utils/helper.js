@@ -31,6 +31,10 @@ export const MENU_ITEMS = [
   { label: "Notifications", icon: <IoIosNotifications size={20} />, path: ROUTES.NOCIFICATIONS },
 ];
 
+export const ROLE_DISPLAY_NAME = {
+    MEDICAL_REVIEWER: "Medical Affairs",
+  };
+
 
 // Get token from localStorage
 export const getToken = () => {

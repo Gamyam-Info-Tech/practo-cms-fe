@@ -80,7 +80,7 @@ export const fetchDoctorPointers =
 
     try {
       const response = await api.get(CREATE_DOCTOR_POINTER, {
-        params: { page, limit, search, ...(topicId && { topicId }) },
+        params: { page, limit, ...(search?.trim() && { search }), ...(topicId && { topicId }) },
       });
 
       dispatch(
